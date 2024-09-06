@@ -1,8 +1,6 @@
-package tddserver_test
+package main
 
 import (
-	"github.com/ArsaGit/tdd-server"
-
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,7 +11,7 @@ func TestGETPlayers(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/players/Pepper", nil)
 		response := httptest.NewRecorder()
 
-		tddserver.PlayerServer(response, request)
+		PlayerServer(response, request)
 
 		got := response.Body.String()
 		want := "20"

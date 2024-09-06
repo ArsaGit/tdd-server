@@ -1,4 +1,4 @@
-package tddserver
+package main
 
 import (
 	"fmt"

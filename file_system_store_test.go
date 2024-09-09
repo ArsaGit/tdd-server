@@ -31,11 +31,13 @@ func TestFileSystemStore(t *testing.T) {
 		store := FileSystemPlayerStore{database}
 
 		got := store.GetPlayerScore("Chris")
-
 		want := 33
-
-		if got != want {
-			t.Errorf("got %d want %d", got, want)
-		}
+		assertScoreEquals(t, got, want)
 	})
+}
+
+func assertScoreEquals(t testing.TB, got, want int) {
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
+	}
 }

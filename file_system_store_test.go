@@ -12,7 +12,8 @@ func TestFileSystemStore(t *testing.T) {
 			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
 
 		got := store.GetLeague()
 
@@ -34,7 +35,8 @@ func TestFileSystemStore(t *testing.T) {
 			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
 
 		got := store.GetPlayerScore("Chris")
 		want := 33
@@ -47,7 +49,8 @@ func TestFileSystemStore(t *testing.T) {
 			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
 
 		store.RecordWin("Chris")
 
@@ -62,7 +65,8 @@ func TestFileSystemStore(t *testing.T) {
 			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
 
 		store.RecordWin("Pepper")
 
@@ -70,6 +74,22 @@ func TestFileSystemStore(t *testing.T) {
 		want := 1
 		assertScoreEquals(t, got, want)
 	})
+
+	t.Run("works with an empty file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
+
+		_, err := NewFileSystemStore(database)
+
+		assertNoError(t, err)
+	})
+}
+
+func assertNoError(t testing.TB, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didn't expect an error but got one, %v", err)
+	}
 }
 
 func assertScoreEquals(t testing.TB, got, want int) {

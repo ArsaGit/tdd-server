@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	"os"
@@ -21,7 +21,7 @@ func TestFileSystemStore(t *testing.T) {
 			{"Cleo", 10},
 		}
 
-		assertLeague(t,got,want)
+		assertLeague(t, got, want)
 
 		// читаем снова
 		got = store.GetLeague()

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/ArsaGit/tdd-server"
+	poker "github.com/ArsaGit/tdd-server"
 )
 
 const dbFileName = "game.db.json"

@@ -9,6 +9,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 )
 
 type StubPlayerStore struct {
@@ -28,6 +29,23 @@ func (s *StubPlayerStore) RecordWin(name string) {
 
 func (s *StubPlayerStore) GetLeague() League {
 	return s.league
+}
+
+type ScheduledAlert struct {
+	At     time.Duration
+	Amount int
+}
+
+func (s ScheduledAlert) String() string {
+	return fmt.Sprintf("%d chips at %v", s.Amount, s.At)
+}
+
+type SpyBlindAlerter struct {
+	Alerts []ScheduledAlert
+}
+
+func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int) {
+	s.Alerts = append(s.Alerts, ScheduledAlert{at, amount})
 }
 
 func GetLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
@@ -73,6 +91,13 @@ func CreateTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	}
 
 	return tmpfile, removeFile
+}
+
+func AssertScheduledAlert(t testing.TB, got, want ScheduledAlert) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
 }
 
 func AssertNoError(t testing.TB, err error) {

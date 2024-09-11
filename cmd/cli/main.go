@@ -23,6 +23,7 @@ func main() {
 	game := poker.NewCLI(
 		store,
 		os.Stdin,
+		os.Stdout,
 		poker.BlindAlerterFunc(poker.StdOutAlerter))
 	game.PlayPoker()
 }

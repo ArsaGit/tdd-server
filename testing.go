@@ -51,18 +51,23 @@ func (s *SpyBlindAlerter) ScheduleAlertAt(at time.Duration, amount int, to io.Wr
 }
 
 type GameSpy struct {
-	StartedWith  int
-	FinishedWith string
-	StartCalled  bool
+	StartCalled     bool
+	StartCalledWith int
+	BlindAlert      []byte
+
+	FinishedCalled     bool
+	FinishedCalledWith string
 }
 
-func (g *GameSpy) Start(numberOfPlayers int, alertsDestination io.Writer) {
-	g.StartedWith = numberOfPlayers
+func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalled = true
+	g.StartCalledWith = numberOfPlayers
+	out.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
-	g.FinishedWith = winner
+	g.FinishedCalled = true
+	g.FinishedCalledWith = winner
 }
 
 func GetLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
@@ -182,7 +187,7 @@ func AssertMessagesSentToUser(t testing.TB, stdout *bytes.Buffer, messages ...st
 
 func AssertGameStartedWith(t testing.TB, game *GameSpy, numberOfPlayers int) {
 	t.Helper()
-	got := game.StartedWith
+	got := game.StartCalledWith
 	want := numberOfPlayers
 	if got != want {
 		t.Errorf("got %d, want %d", got, want)
@@ -191,7 +196,7 @@ func AssertGameStartedWith(t testing.TB, game *GameSpy, numberOfPlayers int) {
 
 func AssertFinishCalledWith(t testing.TB, game *GameSpy, winner string) {
 	t.Helper()
-	got := game.FinishedWith
+	got := game.FinishedCalledWith
 	want := winner
 	if got != want {
 		t.Errorf("got %q, want %q", got, want)

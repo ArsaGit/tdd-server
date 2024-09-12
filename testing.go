@@ -1,6 +1,7 @@
 package poker
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +9,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -166,5 +168,39 @@ func AssertResponseBody(t testing.TB, got, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("response body is wrong, got %q want %q", got, want)
+	}
+}
+
+func AssertMessagesSentToUser(t testing.TB, stdout *bytes.Buffer, messages ...string) {
+	t.Helper()
+	want := strings.Join(messages, "")
+	got := stdout.String()
+	if got != want {
+		t.Errorf("got %q sent to stdout but expected %+v", got, messages)
+	}
+}
+
+func AssertGameStartedWith(t testing.TB, game *GameSpy, numberOfPlayers int) {
+	t.Helper()
+	got := game.StartedWith
+	want := numberOfPlayers
+	if got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+}
+
+func AssertFinishCalledWith(t testing.TB, game *GameSpy, winner string) {
+	t.Helper()
+	got := game.FinishedWith
+	want := winner
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func AssertGameNotStarted(t testing.TB, game *GameSpy) {
+	t.Helper()
+	if game.StartCalled {
+		t.Errorf("game should not have started")
 	}
 }

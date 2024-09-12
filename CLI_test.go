@@ -26,9 +26,9 @@ func TestCLI(t *testing.T) {
 
 		cli.PlayPoker()
 
-		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt)
-		assertGameStartedWith(t, game, 3)
-		assertFinishCalledWith(t, game, "Chris")
+		poker.AssertMessagesSentToUser(t, stdout, poker.PlayerPrompt)
+		poker.AssertGameStartedWith(t, game, 3)
+		poker.AssertFinishCalledWith(t, game, "Chris")
 	})
 
 	t.Run("start game with 8 players and record 'Cleo' as winner", func(t *testing.T) {
@@ -39,8 +39,8 @@ func TestCLI(t *testing.T) {
 
 		cli.PlayPoker()
 
-		assertGameStartedWith(t, game, 8)
-		assertFinishCalledWith(t, game, "Cleo")
+		poker.AssertGameStartedWith(t, game, 8)
+		poker.AssertFinishCalledWith(t, game, "Cleo")
 	})
 
 	t.Run("it prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
@@ -52,8 +52,8 @@ func TestCLI(t *testing.T) {
 		cli := poker.NewCLI(in, stdout, game)
 		cli.PlayPoker()
 
-		assertGameNotStarted(t, game)
-		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
+		poker.AssertGameNotStarted(t, game)
+		poker.AssertMessagesSentToUser(t, stdout, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
 	})
 }
 
@@ -120,40 +120,6 @@ func checkSchedulingCases(cases []poker.ScheduledAlert, t *testing.T, blindAlert
 			got := blindAlerter.Alerts[i]
 			poker.AssertScheduledAlert(t, got, want)
 		})
-	}
-}
-
-func assertMessagesSentToUser(t testing.TB, stdout *bytes.Buffer, messages ...string) {
-	t.Helper()
-	want := strings.Join(messages, "")
-	got := stdout.String()
-	if got != want {
-		t.Errorf("got %q sent to stdout but expected %+v", got, messages)
-	}
-}
-
-func assertGameStartedWith(t testing.TB, game *poker.GameSpy, numberOfPlayers int) {
-	t.Helper()
-	got := game.StartedWith
-	want := numberOfPlayers
-	if got != want {
-		t.Errorf("got %d, want %d", got, want)
-	}
-}
-
-func assertFinishCalledWith(t testing.TB, game *poker.GameSpy, winner string) {
-	t.Helper()
-	got := game.FinishedWith
-	want := winner
-	if got != want {
-		t.Errorf("got %q, want %q", got, want)
-	}
-}
-
-func assertGameNotStarted(t testing.TB, game *poker.GameSpy) {
-	t.Helper()
-	if game.StartCalled {
-		t.Errorf("game should not have started")
 	}
 }
 

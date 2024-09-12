@@ -12,7 +12,7 @@ const dbFileName = "game.db.json"
 
 func main() {
 	store, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
-	alerter := poker.BlindAlerterFunc(poker.StdOutAlerter)
+	alerter := poker.BlindAlerterFunc(poker.Alerter)
 	game := poker.NewGame(alerter, store)
 
 	if err != nil {

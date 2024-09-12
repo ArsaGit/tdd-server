@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"text/template"
+
+	"github.com/gorilla/websocket"
 )
 
 const jsonContentType = "application/json"
@@ -26,6 +28,16 @@ type PlayerServer struct {
 	http.Handler
 }
 
+func (p *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+	conn, _ := upgrader.Upgrade(w, r, nil)
+	_, winnerMsg, _ := conn.ReadMessage()
+	p.store.RecordWin(string(winnerMsg))
+}
+
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
 
@@ -35,6 +47,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
 	router.Handle("/game", http.HandlerFunc(p.game))
+	router.Handle("/ws", http.HandlerFunc(p.webSocket))
 
 	p.Handler = router
 
